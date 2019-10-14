@@ -9,5 +9,6 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/login/facebook', authController.findOrCreateUser, authController.createToken);
+router.post('/logout', authController.verifyToken, authController.logout);
 
 module.exports = router;

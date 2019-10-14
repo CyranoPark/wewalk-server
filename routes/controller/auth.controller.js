@@ -42,10 +42,13 @@ exports.createToken = async (req, res, next) => {
 exports.verifyToken = async (req, res, next) => {
   try {
     const { socialId, userToken } = req.body;
-
     const decoded = await jwt.verify(userToken, process.env.TOKEN_SECRET_KEY);
-    const currentUser = await User.findOne({social_id : socialId});
-    if (currentUser !== decoded.socialId) {
+    const currentUser = await User.findOne({social_id : decoded.socialId});
+    console.log(123123)
+    console.log(currentUser.social_id)
+    console.log(socialId)
+    if (currentUser.social_id.toString() !== socialId.toString()) {
+      console.log('errrrr')
       throw new Error();
     }
 
@@ -53,4 +56,9 @@ exports.verifyToken = async (req, res, next) => {
   } catch (error) {
     res.status(402).send({error: 'unauthorized'});
   }
+};
+
+exports.logout = async (req, res, next) => {
+  console.log('logout')
+  res.status(200).send({ result: 'ok' });
 };
