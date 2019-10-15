@@ -12,6 +12,7 @@ const userSchema = new mongoose.Schema({
   },
   profile_img_url: {
     type: String,
+    default: 'https://wewalktest.s3.ap-northeast-2.amazonaws.com/129-512.png'
     // Match:
   },
   name: {

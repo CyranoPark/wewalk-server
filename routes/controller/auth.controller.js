@@ -41,14 +41,11 @@ exports.createToken = async (req, res, next) => {
 
 exports.verifyToken = async (req, res, next) => {
   try {
-    const { socialId, userToken } = req.body;
+    const userToken = req.headers.usertoken.split('Bearer ')[1];
+    const socialId = req.headers.socialid;
     const decoded = await jwt.verify(userToken, process.env.TOKEN_SECRET_KEY);
     const currentUser = await User.findOne({social_id : decoded.socialId});
-    console.log(123123)
-    console.log(currentUser.social_id)
-    console.log(socialId)
-    if (currentUser.social_id.toString() !== socialId.toString()) {
-      console.log('errrrr')
+    if (currentUser.social_id.toString() !== socialId) {
       throw new Error();
     }
 

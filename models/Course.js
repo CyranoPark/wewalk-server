@@ -8,16 +8,37 @@ const courseSchema = new mongoose.Schema({
 		type: String
 	},
 	created_by: {
-		type: Schema.Types.ObjectId,
+		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User'
 	},
 	path: [{
-    type: [ Number ],
-    required: true
-  }],
+		latitude : {
+			type: Number,
+			required: true
+		},
+		longitude : {
+			type: Number,
+			required: true
+		},
+		timestamps : {
+			type: Date,
+			required: true
+		},
+		_id: false
+	}],
 	start_location: {
-		type: [ Number ],
+		latitude : {
+    type: Number,
+    required: true
+		},
+		longitude : {
+		type: Number,
 		required: true
+		},
+		timestamps : {
+			type: Date,
+			required: true
+		}
 	},
 	distance: {
 		type: Number,
@@ -29,13 +50,12 @@ const courseSchema = new mongoose.Schema({
 	},
 	thumbnail: {
 		type: String,
-		required: true,
-		default: 'https://wewalktest.s3.ap-northeast-2.amazonaws.com/129-512.png'
+		default: 'https://wewalk.s3.ap-northeast-2.amazonaws.com/course_default.jpg'
 	},
 	images_by_location: [{
 		img_url: { type: String },
 		coordinate: { type: [ Number ]},
-		comment: { type: String }
+		_id: false
 	}]
 }, { timestamps: true });
 
