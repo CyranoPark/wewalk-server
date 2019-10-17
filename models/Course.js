@@ -20,7 +20,7 @@ const courseSchema = new mongoose.Schema({
 			type: Number,
 			required: true
 		},
-		timestamps : {
+		timestamp : {
 			type: Date,
 			required: true
 		},
@@ -35,7 +35,7 @@ const courseSchema = new mongoose.Schema({
 		type: Number,
 		required: true
 		},
-		timestamps : {
+		timestamp : {
 			type: Date,
 			required: true
 		}
@@ -53,8 +53,12 @@ const courseSchema = new mongoose.Schema({
 		default: 'https://wewalk.s3.ap-northeast-2.amazonaws.com/course_default.jpg'
 	},
 	images_by_location: [{
-		img_url: { type: String },
-		coordinate: { type: [ Number ]},
+		image_url: String,
+		location: {
+			latitude: Number,
+			longitude: Number,
+			timestamp : Date
+		},
 		_id: false
 	}]
 }, { timestamps: true });

@@ -13,6 +13,17 @@ aws.config.update({
 
 const s3 = new aws.S3();
 
+exports.getCourseData = async (req, res, next) => {
+  try {
+    const courseId = req.params.courseId;
+    const targetCourse = await Course.findById(courseId);
+    console.log(courseId, targetCourse);
+    res.status(200).send(targetCourse);
+  } catch (error) {
+    res.status(400).send({error: 'bad request'});
+  }
+};
+
 exports.createCourse = async (req, res, next) => {
   try {
     const socialId = req.headers.socialid;
@@ -39,17 +50,14 @@ exports.addPath = async (req, res, next) => {
     const courseId = req.params.courseId;
 
     const targetCourse = await Course.findById(courseId);
-
     path.forEach(location => targetCourse.path.push(location));
     targetCourse.distance += distance;
     targetCourse.elevation += elevation;
 
 
     await targetCourse.save();
-
     res.status(200).send(targetCourse);
   } catch (error) {
-    console.log(error.message)
     res.status(400).send({error: 'bad request'});
   }
 };
@@ -67,80 +75,24 @@ exports.uploadImage = multer({
 })
 
 exports.sendFileLocation = (req, res, next) => {
-  res.send({ imageUrl: req.file.location });
+  const mockLocation = 'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500';
+  res.send({ imageUrl: mockLocation });
 };
 
 exports.updateLocationImage = async (req, res, next) => {
   try {
-    console.log(req.body)
     const { location, imageUrl } = req.body;
     const imageData = {
       image_url: imageUrl,
-      coordinate: location
+      location
     };
-    console.log(imageData);
-    const result = await Course.findById(req.params.courseId);
+    const targetCourse = await Course.findById(req.params.courseId);
+    targetCourse.images_by_location.push(imageData);
+    await targetCourse.save();
 
-    result.images_by_location.push(imageData);
-    await result.save()
-
-    res.send({ result, imageUrl });
+    res.send(imageData);
   } catch (error) {
     res.status(400).send({error: 'bad request'});
   }
 };
-
-/*
-{
-	user_id,
-	path: [lat,lon],
-	start_location: [lat,lon],
-	distance: 0,
-	elevation: 0,
-	thumbnail: img_url,
-	images_by_location: {
-		img_url: img_url,
-		coordinate: [lat,lon],
-		comment: ''
-	}
-}
-
-  title: {
-		type: String
-	},
-	description: {
-		type: String
-	},
-	created_by: {
-		type: Schema.Types.ObjectId,
-		ref: 'User'
-	},
-	path: [{
-    type: [ Number ],
-    required: true
-  }],
-	start_location: {
-		type: [ Number ],
-		required: true
-	},
-	distance: {
-		type: Number,
-		required: true
-	},
-	elevation: {
-		type: Number,
-		required: true
-	},
-	thumbnail: {
-		type: String,
-		required: true,
-		default: 'https://wewalktest.s3.ap-northeast-2.amazonaws.com/129-512.png'
-	},
-	images_by_location: [{
-		img_url: { type: String },
-		coordinate: { type: [ Number ]},
-		comment: { type: String }
-  }]
-  
-*/
 
