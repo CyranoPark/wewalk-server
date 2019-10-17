@@ -40,7 +40,6 @@ exports.createToken = async (req, res, next) => {
 };
 
 exports.verifyToken = async (req, res, next) => {
-  // return next();
   try {
     const userToken = req.headers.usertoken.split('Bearer ')[1];
     const socialId = req.headers.socialid;

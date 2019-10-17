@@ -17,7 +17,7 @@ exports.getCourseData = async (req, res, next) => {
   try {
     const courseId = req.params.courseId;
     const targetCourse = await Course.findById(courseId);
-    console.log(courseId, targetCourse);
+
     res.status(200).send(targetCourse);
   } catch (error) {
     res.status(400).send({error: 'bad request'});
@@ -56,7 +56,7 @@ exports.addPath = async (req, res, next) => {
 
 
     await targetCourse.save();
-    res.status(200).send(targetCourse);
+    res.status(200).send(targetCourse.path);
   } catch (error) {
     res.status(400).send({error: 'bad request'});
   }
@@ -95,4 +95,3 @@ exports.updateLocationImage = async (req, res, next) => {
     res.status(400).send({error: 'bad request'});
   }
 };
-
