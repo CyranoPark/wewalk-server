@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const jwt = require('jsonwebtoken');
 const authController = require('./controller/auth.controller');
 
 /* GET home page. */
@@ -9,6 +8,6 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/login/facebook', authController.findOrCreateUser, authController.createToken);
-router.post('/logout', authController.verifyToken, authController.logout);
+router.post('/logout', authController.logout);
 
 module.exports = router;

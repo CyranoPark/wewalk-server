@@ -12,12 +12,12 @@ const courseSchema = new mongoose.Schema({
 		ref: 'User'
 	},
 	path: [{
-		latitude : {
-			type: Number,
-			required: true
+		type: {
+			type: String,
+			default: 'Point'
 		},
-		longitude : {
-			type: Number,
+		coordinates: {
+			type: [Number],
 			required: true
 		},
 		timestamp : {
@@ -27,13 +27,13 @@ const courseSchema = new mongoose.Schema({
 		_id: false
 	}],
 	start_location: {
-		latitude : {
-    type: Number,
-    required: true
+		type: {
+			type: String,
+			default: 'Point'
 		},
-		longitude : {
-		type: Number,
-		required: true
+		coordinates: {
+			type: [Number],
+			required: true
 		},
 		timestamp : {
 			type: Date,
@@ -55,8 +55,14 @@ const courseSchema = new mongoose.Schema({
 	images_by_location: [{
 		image_url: String,
 		location: {
-			latitude: Number,
-			longitude: Number,
+			type: {
+				type: String,
+				default: 'Point'
+			},
+			coordinates: {
+				type: [Number],
+				required: true
+			},
 			timestamp : Date
 		},
 		_id: false

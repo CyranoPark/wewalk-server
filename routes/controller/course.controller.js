@@ -13,6 +13,20 @@ aws.config.update({
 
 const s3 = new aws.S3();
 
+exports.getCoursesBypage = async (req, res, next) => {
+  try {
+    const pageNumber = req.params.pageNo;
+    const pageSize = req.params.pageSize;
+
+    if (pageNumber <= 0) {
+      throw new Error('invalid Page Number')
+    }
+
+  } catch (error) {
+    
+  }
+};
+
 exports.getCourseData = async (req, res, next) => {
   try {
     const courseId = req.params.courseId;
@@ -39,7 +53,6 @@ exports.createCourse = async (req, res, next) => {
     const newCourse = await new Course(course).save();
     res.status(200).send(newCourse);
   } catch (error) {
-    console.log(error.message)
     res.status(400).send({error: 'bad request'});
   }
 };
@@ -69,14 +82,14 @@ exports.uploadImage = multer({
     contentType: multerS3.AUTO_CONTENT_TYPE,
     acl: 'public-read',
     key: (req, file, cb) => {
-      cb(null, file.originalname);
+      cb(null, file.originalname + new Date().toDateString());
     }
   })
 })
 
 exports.sendFileLocation = (req, res, next) => {
-  const mockLocation = 'https://images.pexels.com/photos/67636/rose-blue-flower-rose-blooms-67636.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500';
-  res.send({ imageUrl: mockLocation });
+  console.log(req.file)
+  res.send({ imageUrl: req.file.location });
 };
 
 exports.updateLocationImage = async (req, res, next) => {
