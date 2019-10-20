@@ -13,17 +13,38 @@ aws.config.update({
 
 const s3 = new aws.S3();
 
-exports.getCoursesBypage = async (req, res, next) => {
+exports.getCoursesByLocation = async (req, res, next) => {
   try {
-    const pageNumber = req.params.pageNo;
-    const pageSize = req.params.pageSize;
-
-    if (pageNumber <= 0) {
+    const pageNumber = parseInt(req.query.pageNo);
+    const pageSize =  parseInt(req.query.pageSize);
+    console.log(pageNumber, pageSize)
+    const currentLocation =  [ Number(req.query.lon), Number(req.query.lat) ];
+    if (pageNumber < 0 || !pageNumber) {
       throw new Error('invalid Page Number')
     }
 
+    const skipNumber = pageSize * ( pageNumber - 1 );
+    const courses = await Course.find({
+      start_location: {
+       $near: {
+        $maxDistance: 1000,
+        $geometry: {
+         type: 'Point',
+         coordinates: currentLocation,
+         spherical: true
+        }
+       }
+      }
+    }, null, { skip: skipNumber }).limit(pageSize);
+
+    if (!courses.length) {
+      throw new Error('No more Courses aroud hear');
+    }
+
+    res.json(courses);
   } catch (error) {
-    
+    console.log(error.message)
+    res.send(error.message)
   }
 };
 
@@ -82,7 +103,7 @@ exports.uploadImage = multer({
     contentType: multerS3.AUTO_CONTENT_TYPE,
     acl: 'public-read',
     key: (req, file, cb) => {
-      cb(null, file.originalname + new Date().toDateString());
+      cb(null, file.originalname);
     }
   })
 })
@@ -108,3 +129,21 @@ exports.updateLocationImage = async (req, res, next) => {
     res.status(400).send({error: 'bad request'});
   }
 };
+
+exports.updateCourseInfo = async (req, res, next) => {
+  try {
+    const { title, description, ispublic } = req.body;
+    const result = await Course.findByIdAndUpdate(
+      req.params.courseId,
+      {
+        title,
+        description,
+        ispublic
+      }
+    );
+
+    res.send(result);
+  } catch (error) {
+    res.status(400).send({error: 'bad request'});
+  }
+}

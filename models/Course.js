@@ -11,10 +11,16 @@ const courseSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User'
 	},
+	isPublic: {
+		type: Boolean,
+		default: false,
+		required: true
+	},
 	path: [{
 		type: {
 			type: String,
-			default: 'Point'
+			default: 'Point',
+			enum: ['Point']
 		},
 		coordinates: {
 			type: [Number],
@@ -29,7 +35,8 @@ const courseSchema = new mongoose.Schema({
 	start_location: {
 		type: {
 			type: String,
-			default: 'Point'
+			default: 'Point',
+			enum: ['Point']
 		},
 		coordinates: {
 			type: [Number],
@@ -57,10 +64,11 @@ const courseSchema = new mongoose.Schema({
 		location: {
 			type: {
 				type: String,
-				default: 'Point'
+				default: 'Point',
+				enum: ['Point']
 			},
 			coordinates: {
-				type: [Number],
+				type: [ Number ],
 				required: true
 			},
 			timestamp : Date
@@ -68,5 +76,7 @@ const courseSchema = new mongoose.Schema({
 		_id: false
 	}]
 }, { timestamps: true });
+
+courseSchema.index({ start_location: '2dsphere' });
 
 module.exports = mongoose.model('Course', courseSchema);

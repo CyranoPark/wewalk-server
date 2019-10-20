@@ -14,7 +14,8 @@ const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_SERVER_URL,
   {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    useFindAndModify: false
   }
 );
 
