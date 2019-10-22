@@ -5,6 +5,7 @@ const authController = require('./controller/auth.controller');
 
 /* GET users listing. */
 router.post('/new', authController.verifyToken, courseController.createCourse);
+router.get('/my', authController.verifyToken, courseController.getMyCourses);
 router.get('/:courseId', authController.verifyToken, courseController.getCourseData);
 router.post('/:courseId/info', authController.verifyToken, courseController.updateCourseInfo);
 router.post('/:courseId/path', authController.verifyToken, courseController.addPath);

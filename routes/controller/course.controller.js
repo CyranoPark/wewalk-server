@@ -17,25 +17,43 @@ exports.getCoursesByLocation = async (req, res, next) => {
   try {
     const pageNumber = parseInt(req.query.pageNo);
     const pageSize =  parseInt(req.query.pageSize);
-    console.log(pageNumber, pageSize)
     const currentLocation =  [ Number(req.query.lon), Number(req.query.lat) ];
     if (pageNumber < 0 || !pageNumber) {
       throw new Error('invalid Page Number')
     }
 
     const skipNumber = pageSize * ( pageNumber - 1 );
-    const courses = await Course.find({
-      start_location: {
-       $near: {
-        $maxDistance: 1000,
-        $geometry: {
-         type: 'Point',
-         coordinates: currentLocation,
-         spherical: true
+    const courses = await Course
+      .find({
+        ispublic: true,
+        start_location: {
+          $near: {
+            $maxDistance: 1000000,
+            $geometry: {
+            type: 'Point',
+            coordinates: currentLocation,
+            spherical: true
+            }
+          }
         }
-       }
-      }
-    }, null, { skip: skipNumber }).limit(pageSize);
+      }, null, { skip: skipNumber })
+      .limit(pageSize)
+      .populate({ path: 'created_by', select: 'name' });
+
+    res.json(courses);
+  } catch (error) {
+    res.status(400).send(error.message)
+  }
+};
+
+exports.getMyCourses = async (req, res, next) => {
+  try {
+    const socialId = req.headers.socialid;
+    const targetUser = await User.findOne({ social_id: socialId });
+    const courses = await Course
+    .find({ created_by: targetUser._id })
+    .sort({ createdAt: 'desc' })
+    .populate({ path: 'created_by' });
 
     if (!courses.length) {
       throw new Error('No more Courses aroud hear');
@@ -43,7 +61,6 @@ exports.getCoursesByLocation = async (req, res, next) => {
 
     res.json(courses);
   } catch (error) {
-    console.log(error.message)
     res.send(error.message)
   }
 };
@@ -109,7 +126,6 @@ exports.uploadImage = multer({
 })
 
 exports.sendFileLocation = (req, res, next) => {
-  console.log(req.file)
   res.send({ imageUrl: req.file.location });
 };
 
@@ -122,6 +138,7 @@ exports.updateLocationImage = async (req, res, next) => {
     };
     const targetCourse = await Course.findById(req.params.courseId);
     targetCourse.images_by_location.push(imageData);
+    targetCourse.thumbnail = imageUrl;
     await targetCourse.save();
 
     res.send(imageData);
@@ -132,13 +149,13 @@ exports.updateLocationImage = async (req, res, next) => {
 
 exports.updateCourseInfo = async (req, res, next) => {
   try {
-    const { title, description, ispublic } = req.body;
+    const { title, description, isPublic } = req.body;
     const result = await Course.findByIdAndUpdate(
       req.params.courseId,
       {
         title,
         description,
-        ispublic
+        ispublic: isPublic
       }
     );
 

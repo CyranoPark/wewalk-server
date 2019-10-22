@@ -11,7 +11,7 @@ const courseSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: 'User'
 	},
-	isPublic: {
+	ispublic: {
 		type: Boolean,
 		default: false,
 		required: true
@@ -40,6 +40,10 @@ const courseSchema = new mongoose.Schema({
 		},
 		coordinates: {
 			type: [Number],
+			required: true
+		},
+		address: {
+			type: String,
 			required: true
 		},
 		timestamp : {
