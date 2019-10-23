@@ -18,6 +18,7 @@ exports.findOrCreateUser = async (req, res, next) => {
     );
     req.session.userId = user.doc._id;
     req.session.socialId = user.doc.social_id;
+
     next();
   } catch (error) {
     res.status(400).send({error: 'login failed'});
@@ -37,6 +38,7 @@ exports.createToken = async (req, res, next) => {
 
     res.set({ userToken: token }).send({result: 'ok'});
   } catch (error) {
+    await req.session.destroy();
     res.status(400).send({error: 'login failed'});
   }
 };

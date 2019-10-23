@@ -3,7 +3,7 @@ const User = require('../../models/User');
 const aws = require('aws-sdk');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
-const { AWS_CONFIG_REGION } = require('../../constants');
+const { AWS_CONFIG_REGION, AWA_S3_BUCKET } = require('../../constants');
 
 aws.config.update({
   accessKeyId: process.env.AWS_ACCESS_ID,
@@ -19,7 +19,7 @@ exports.getCoursesByLocation = async (req, res, next) => {
     const pageSize =  parseInt(req.query.pageSize);
     const currentLocation =  [ Number(req.query.lon), Number(req.query.lat) ];
     if (pageNumber < 0 || !pageNumber) {
-      throw new Error('invalid Page Number')
+      throw new Error('invalid Page Number');
     }
 
     const skipNumber = pageSize * ( pageNumber - 1 );
@@ -28,11 +28,11 @@ exports.getCoursesByLocation = async (req, res, next) => {
         ispublic: true,
         start_location: {
           $near: {
-            $maxDistance: 1000000,
+            $maxDistance: 10000,
             $geometry: {
-            type: 'Point',
-            coordinates: currentLocation,
-            spherical: true
+              type: 'Point',
+              coordinates: currentLocation,
+              spherical: true
             }
           }
         },
@@ -45,7 +45,7 @@ exports.getCoursesByLocation = async (req, res, next) => {
 
     res.json(courses);
   } catch (error) {
-    res.status(400).send(error.message)
+    res.status(400).send(error.message);
   }
 };
 
@@ -53,9 +53,9 @@ exports.getMyCourses = async (req, res, next) => {
   try {
     const targetUser = await User.findById(req.session.userId);
     const courses = await Course
-    .find({ created_by: targetUser._id })
-    .sort({ createdAt: 'desc' })
-    .populate({ path: 'created_by' });
+      .find({ created_by: targetUser._id })
+      .sort({ createdAt: 'desc' })
+      .populate({ path: 'created_by' });
 
     if (!courses.length) {
       throw new Error('No more Courses aroud hear');
@@ -63,7 +63,7 @@ exports.getMyCourses = async (req, res, next) => {
 
     res.json(courses);
   } catch (error) {
-    res.status(400).send(error.message)
+    res.status(400).send(error.message);
   }
 };
 
@@ -118,14 +118,14 @@ exports.addPath = async (req, res, next) => {
 exports.uploadImage = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "wewalk",
+    bucket: AWA_S3_BUCKET,
     contentType: multerS3.AUTO_CONTENT_TYPE,
     acl: 'public-read',
     key: (req, file, cb) => {
       cb(null, file.originalname);
     }
   })
-})
+});
 
 exports.sendFileLocation = (req, res, next) => {
   res.send({ imageUrl: req.file.location });

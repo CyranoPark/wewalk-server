@@ -9,24 +9,31 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const logger = require('morgan');
 
-const indexRouter = require('./routes/index');
+const authRouter = require('./routes/auth');
 const courseRouter = require('./routes/course');
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_SERVER_URL,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useCreateIndex: true,
   }
 );
 
 const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
+db.on('error', (err) => {
+  console.log(`Connection error : ${err}`);
+});
+db.once('open', () => {
   console.log('connected mongo DB');
 });
 
 const app = express();
+const port = process.env.PORT || '3000';
+app.listen(port, () => {
+  console.log(`server is running on port ${port}`);
+});
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
@@ -39,12 +46,11 @@ app.use(session({
   cookie: {
     maxAge: 24 * 60 * 60 * 1000
   }
-}))
+}));
 
-app.use('/', indexRouter);
-app.use('/course', courseRouter);
+app.use('/', courseRouter);
+app.use('/auth', authRouter);
 
-// catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
@@ -55,9 +61,8 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
   res.status(err.status || 500);
-  res.send('error');
+  res.send('Internal Server Error');
 });
 
 module.exports = app;
