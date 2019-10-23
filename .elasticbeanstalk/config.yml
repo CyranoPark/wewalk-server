@@ -2,7 +2,7 @@ branch-defaults:
   master:
     environment: wewalkapp
 environment-defaults:
-  sample:
+  wewalkapp:
     branch: null
     repository: null
 global:
