@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node app.js",
-    "dev": "NODE_ENV='dev' nodemon app.js"
+    "dev": "NODE_ENV='dev' nodemon app.js",
+    "test": "mocha spec"
   },
   "dependencies": {
     "aws-sdk": "^2.549.0",
@@ -23,6 +24,8 @@
     "multer-s3": "^2.9.0"
   },
   "devDependencies": {
-    "eslint": "^6.5.1"
+    "chai": "^4.2.0",
+    "eslint": "^6.5.1",
+    "mocha": "^6.2.2"
   }
 }
