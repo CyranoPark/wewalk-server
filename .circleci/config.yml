@@ -34,9 +34,9 @@ jobs:
           name: Deploy to env
           command: |
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
-                eb deploy Wewalk-env
+                eb deploy wewalkapp
             else
-                eb deploy Wewalk-env-development
+                eb deploy Wewalk-env
             fi
 workflows:
   version: 2

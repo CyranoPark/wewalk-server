@@ -1,12 +1,12 @@
 branch-defaults:
   master:
-    environment: Wewalk
+    environment: wewalkapp
 environment-defaults:
   sample:
     branch: null
     repository: null
 global:
-  application_name: Wewalk
+  application_name: wewalk
   default_ec2_keyname: null
   default_platform: arn:aws:elasticbeanstalk:ap-northeast-2::platform/Node.js running
     on 64bit Amazon Linux/4.11.0
