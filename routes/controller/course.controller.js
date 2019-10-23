@@ -35,6 +35,9 @@ exports.getCoursesByLocation = async (req, res, next) => {
             spherical: true
             }
           }
+        },
+        created_by: {
+          $ne: req.session.userId
         }
       }, null, { skip: skipNumber })
       .limit(pageSize)
@@ -48,8 +51,7 @@ exports.getCoursesByLocation = async (req, res, next) => {
 
 exports.getMyCourses = async (req, res, next) => {
   try {
-    const socialId = req.headers.socialid;
-    const targetUser = await User.findOne({ social_id: socialId });
+    const targetUser = await User.findById(req.session.userId);
     const courses = await Course
     .find({ created_by: targetUser._id })
     .sort({ createdAt: 'desc' })
@@ -61,7 +63,7 @@ exports.getMyCourses = async (req, res, next) => {
 
     res.json(courses);
   } catch (error) {
-    res.send(error.message)
+    res.status(400).send(error.message)
   }
 };
 
@@ -138,10 +140,23 @@ exports.updateLocationImage = async (req, res, next) => {
     };
     const targetCourse = await Course.findById(req.params.courseId);
     targetCourse.images_by_location.push(imageData);
-    targetCourse.thumbnail = imageUrl;
     await targetCourse.save();
 
     res.send(imageData);
+  } catch (error) {
+    res.status(400).send({error: 'bad request'});
+  }
+};
+
+exports.updateThumbnail = async (req, res, next) => {
+  try {
+    const { imageUrl } = req.body;
+
+    const targetCourse = await Course.findById(req.params.courseId);
+    targetCourse.thumbnail = imageUrl;
+    await targetCourse.save();
+
+    res.send(imageUrl);
   } catch (error) {
     res.status(400).send({error: 'bad request'});
   }
@@ -163,4 +178,14 @@ exports.updateCourseInfo = async (req, res, next) => {
   } catch (error) {
     res.status(400).send({error: 'bad request'});
   }
-}
+};
+
+exports.deleteCourse = async (req, res, next) => {
+  try {
+    const result = await Course.findByIdAndRemove(req.params.courseId);
+
+    res.send(result);
+  } catch (error) {
+    res.status(400).send({error: 'bad request'});
+  }
+};

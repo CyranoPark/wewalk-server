@@ -34,7 +34,8 @@ exports.createToken = async (req, res, next) => {
     const token = await jwt.sign(payload, process.env.TOKEN_SECRET_KEY, {
       expiresIn: 24 * 60 * 60
     });
-    res.set({'USERTOKEN': token}).send({result: 'ok'});
+
+    res.set({ userToken: token }).send({result: 'ok'});
   } catch (error) {
     res.status(400).send({error: 'login failed'});
   }
