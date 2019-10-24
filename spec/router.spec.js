@@ -1,7 +1,6 @@
 require('dotenv').config();
 const chaiHttp = require('chai-http');
 const chai = require('chai');
-const jwt = require('jsonwebtoken');
 const app = require('../app');
 
 chai.use(chaiHttp);
@@ -27,16 +26,6 @@ describe('With mongoDB database', function() {
       profileImage: 'image',
       socialToken: 'fbToken'
     };
-    const TOKEN_SECRET_KEY = require('../routes/controller/auth.controller').TOKEN_SECRET_KEY;
-
-    const payload = {
-      socialToken: 'fbToken',
-      socialId: 100976041333538
-    };
-
-    const token = jwt.sign(payload, TOKEN_SECRET_KEY, {
-      expiresIn: 24 * 60 * 60
-    });
 
     it('should generate token to invalid user', done => {
       chai.request(app)
@@ -44,7 +33,7 @@ describe('With mongoDB database', function() {
         .send({...userData})
         .end((err, res) => {
           if (err) return done(err);
-          expect(res.headers.usertoken).to.equal(token);
+          expect(Boolean(res.headers.usertoken)).to.equal(true);
           done();
         });
     });
