@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
   },
   social_id: {
     type: Number,
-    required: true
+    required: true,
+    unique: true
   },
   profile_img_url: {
     type: String,

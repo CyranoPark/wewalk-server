@@ -80,16 +80,15 @@ exports.getCourseData = async (req, res, next) => {
 
 exports.createCourse = async (req, res, next) => {
   try {
-    const socialId = req.headers.socialid;
     const { startLocation } = req.body;
-    const targetUser = await User.findOne({ social_id: socialId });
     const course = {
-      created_by: targetUser._id,
+      created_by: req.session.userId,
       path: [ startLocation ],
       start_location: startLocation,
       distance: 0,
       elevation: 0
     };
+
     const newCourse = await new Course(course).save();
     res.status(200).send(newCourse);
   } catch (error) {
@@ -165,7 +164,7 @@ exports.updateThumbnail = async (req, res, next) => {
 exports.updateCourseInfo = async (req, res, next) => {
   try {
     const { title, description, isPublic } = req.body;
-    const result = await Course.findByIdAndUpdate(
+    await Course.findByIdAndUpdate(
       req.params.courseId,
       {
         title,
@@ -174,7 +173,7 @@ exports.updateCourseInfo = async (req, res, next) => {
       }
     );
 
-    res.send(result);
+    res.send({ result: 'ok' });
   } catch (error) {
     res.status(400).send({error: 'bad request'});
   }
@@ -182,9 +181,9 @@ exports.updateCourseInfo = async (req, res, next) => {
 
 exports.deleteCourse = async (req, res, next) => {
   try {
-    const result = await Course.findByIdAndRemove(req.params.courseId);
+    await Course.findByIdAndRemove(req.params.courseId);
 
-    res.send(result);
+    res.send({ result: 'ok' });
   } catch (error) {
     res.status(400).send({error: 'bad request'});
   }
