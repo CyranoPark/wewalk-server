@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "NODE_ENV='dev' nodemon app.js",
-    "test": "mocha spec"
+    "test": "mocha spec --exit"
   },
   "dependencies": {
     "aws-sdk": "^2.549.0",
