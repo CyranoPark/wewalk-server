@@ -86,7 +86,8 @@ exports.createCourse = async (req, res, next) => {
       path: [ startLocation ],
       start_location: startLocation,
       distance: 0,
-      elevation: 0
+      elevation: 0,
+      title: startLocation.address
     };
 
     const newCourse = await new Course(course).save();
